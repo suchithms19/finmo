@@ -1,12 +1,14 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Car } from '../models/car.model';
 import { ParkingSlot } from '../models/parking-slot.model';
+import { MinHeap } from '../utils/min-heap';
 
 @Injectable()
 export class ParkingService {
   private slots: Map<number, ParkingSlot> = new Map();
   private registrationToSlot: Map<string, number> = new Map();
   private colorToSlots: Map<string, Set<number>> = new Map();
+  private availableSlots: MinHeap = new MinHeap();
   private initialized: boolean = false;
 
   initialize(size: number): void {
@@ -16,6 +18,7 @@ export class ParkingService {
     
     for (let i = 1; i <= size; i++) {
       this.slots.set(i, { slotNumber: i, isOccupied: false });
+      this.availableSlots.insert(i);
     }
     this.initialized = true;
   }
@@ -29,6 +32,7 @@ export class ParkingService {
     for (let i = 1; i <= additionalSlots; i++) {
       const slotNumber = currentSize + i;
       this.slots.set(slotNumber, { slotNumber, isOccupied: false });
+      this.availableSlots.insert(slotNumber);
     }
   }
 
@@ -41,27 +45,27 @@ export class ParkingService {
       throw new BadRequestException('Car already parked');
     }
 
-    // Find nearest available slot
-    const availableSlot = Array.from(this.slots.values())
-      .find(slot => !slot.isOccupied);
-
-    if (!availableSlot) {
+    // Find nearest available slot using MinHeap - O(log n)
+    const nearestSlotNumber = this.availableSlots.extractMin();
+    if (nearestSlotNumber === undefined) {
       throw new BadRequestException('Parking lot is full');
     }
 
+    const slot = this.slots.get(nearestSlotNumber)!;
+
     // Update slot
     const updatedSlot: ParkingSlot = {
-      ...availableSlot,
+      ...slot,
       isOccupied: true,
       car: { ...car, color: car.color.toLowerCase() }
     };
-    this.slots.set(availableSlot.slotNumber, updatedSlot);
+    this.slots.set(nearestSlotNumber, updatedSlot);
 
     // Update mappings
-    this.registrationToSlot.set(car.registrationNumber, availableSlot.slotNumber);
+    this.registrationToSlot.set(car.registrationNumber, nearestSlotNumber);
     
     const colorSet = this.colorToSlots.get(car.color.toLowerCase()) || new Set();
-    colorSet.add(availableSlot.slotNumber);
+    colorSet.add(nearestSlotNumber);
     this.colorToSlots.set(car.color.toLowerCase(), colorSet);
 
     return updatedSlot;
@@ -91,11 +95,12 @@ export class ParkingService {
       }
     }
 
-    // Update slot
+    // Update slot and add back to available slots
     this.slots.set(slotNumber, {
       slotNumber,
       isOccupied: false
     });
+    this.availableSlots.insert(slotNumber);
   }
 
   getOccupiedSlots(): ParkingSlot[] {
