@@ -1,0 +1,132 @@
+{
+	"info": {
+		"_postman_id": "e5f3b0a0-0b1a-4b1a-9b1a-0b1a4b1a9b1a",
+		"name": "Parking System API",
+		"description": "Collection for testing the Parking System API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "Base URL for the API"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Initialize Parking Lot",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"size\": 5\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/parking/initialize",
+					"host": ["{{baseUrl}}"],
+					"path": ["parking", "initialize"]
+				},
+				"description": "Initialize the parking lot with a specific size"
+			}
+		},
+		{
+			"name": "2. Expand Parking Lot",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"additionalSlots\": 3\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/parking/expand",
+					"host": ["{{baseUrl}}"],
+					"path": ["parking", "expand"]
+				},
+				"description": "Expand the parking lot by adding more slots"
+			}
+		},
+		{
+			"name": "3. Park a Car",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"registrationNumber\": \"KA01HH1234\",\n    \"color\": \"white\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/parking",
+					"host": ["{{baseUrl}}"],
+					"path": ["parking"]
+				},
+				"description": "Park a new car in the nearest available slot"
+			}
+		},
+		{
+			"name": "4. Remove Car from Slot",
+			"request": {
+				"method": "DELETE",
+				"url": {
+					"raw": "{{baseUrl}}/parking/1",
+					"host": ["{{baseUrl}}"],
+					"path": ["parking", "1"]
+				},
+				"description": "Remove a car from a specific slot"
+			}
+		},
+		{
+			"name": "5. Get Occupied Slots",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "{{baseUrl}}/parking/occupied",
+					"host": ["{{baseUrl}}"],
+					"path": ["parking", "occupied"]
+				},
+				"description": "Get all occupied parking slots"
+			}
+		},
+		{
+			"name": "6. Get Slot by Registration Number",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "{{baseUrl}}/parking/registration/KA01HH1234",
+					"host": ["{{baseUrl}}"],
+					"path": ["parking", "registration", "KA01HH1234"]
+				},
+				"description": "Find parking slot by car registration number"
+			}
+		},
+		{
+			"name": "7. Get Slots by Color",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "{{baseUrl}}/parking/color/white",
+					"host": ["{{baseUrl}}"],
+					"path": ["parking", "color", "white"]
+				},
+				"description": "Find all parking slots with cars of a specific color"
+			}
+		}
+	]
+} 
