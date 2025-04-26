@@ -1,5 +1,10 @@
 # Installation and Setup
 
+## Hosted Backend
+The API is hosted at: `https://finmo-8po2.onrender.com`
+
+**Note:** We are using a free server, so the first response may be slow while the server wakes up from inactivity.
+
 ## Local Setup
 
 1. Clone the repository:
@@ -81,6 +86,11 @@ Where n is the total number of parking slots and k is number of cars of that col
 ### 7. Get Slots by Color
 - **GET** `/parking/color/:color`
 - **Response**: `{ "registrationNumbers": string[], "slots": number[] }`
+
+### 8. Get Registration Numbers by Color
+- **GET** `/parking/color/:color`
+- **Response**: `{ "registrationNumbers": string[], "slots": number[] }`
+- *Note: This is handled by getSlotsByColor() - the response includes car details with registration numbers*
 
 ## Testing
 
